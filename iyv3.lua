@@ -4705,6 +4705,8 @@ CMDs[#CMDs + 1] = {NAME = 'promptr6', DESC = 'Prompts the game to switch your ri
 CMDs[#CMDs + 1] = {NAME = 'promptr15', DESC = 'Prompts the game to switch your rig type to R15'}
 CMDs[#CMDs + 1] = {NAME = 'wallwalk / walkonwalls', DESC = 'Walk on walls'}
 CMDs[#CMDs + 1] = {NAME = 'removeads / adblock', DESC = 'Automatically removes ad billboards'}
+CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blink effects and keeps them off'}
+CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Reactivates the effects and stops monitoring blink effects'}
 wait()
 
 for i = 1, #CMDs do
@@ -12780,4 +12782,116 @@ task.spawn(function()
 	IntroBackground:Destroy()
 	minimizeHolder()
 	if IsOnMobile then notify("Unstable Device", "On mobile, Infinite Yield may have issues or features that are not functioning correctly.") end
+end)
+addcmd("antiblink", {}, function(args, speaker)
+    local function disableBlinkEffects()
+        local lighting = game:GetService("Lighting")
+        local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
+        local cc = lighting:FindFirstChild("Blink_Overlay_CC")
+
+        if blur and blur.Enabled then
+            blur.Enabled = false
+        end
+
+        if cc and cc.Enabled then
+            cc.Enabled = false
+        end
+    end
+
+    disableBlinkEffects()
+
+    local connection
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        disableBlinkEffects()
+    end)
+
+    addcmd("unantiblink", {}, function(args, speaker)
+        if connection then
+            connection:Disconnect()
+        end
+
+        local lighting = game:GetService("Lighting")
+        local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
+        local cc = lighting:FindFirstChild("Blink_Overlay_CC")
+
+        if blur then
+            blur.Enabled = true
+        end
+
+        if cc then
+            cc.Enabled = true
+        end
+
+        notify("Antiblink", "Blink effects re-enabled and monitoring stopped.")
+    end)
+
+    notify("Antiblink", "Blink effects disabled and monitoring activated.")
+end)
+addcmd("mobilefly", {"mfly"}, function(args, speaker)
+    local speed = tonumber(args[1]) or 50 -- Velocidad predeterminada si no se proporciona un argumento
+    local controlModule = require(speaker.PlayerScripts:WaitForChild('PlayerModule'):WaitForChild("ControlModule"))
+    
+    local function enableMobileFly()
+        local bv = Instance.new("BodyVelocity")
+        bv.Name = "VelocityHandler"
+        bv.Parent = speaker.Character.HumanoidRootPart
+        bv.MaxForce = Vector3.new(0, 0, 0)
+        bv.Velocity = Vector3.new(0, 0, 0)
+
+        local bg = Instance.new("BodyGyro")
+        bg.Name = "GyroHandler"
+        bg.Parent = speaker.Character.HumanoidRootPart
+        bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        bg.P = 1000
+        bg.D = 50
+    end
+
+    local function onCharacterAdded(char)
+        enableMobileFly()
+    end
+
+    local Signal1 = speaker.CharacterAdded:Connect(onCharacterAdded)
+    enableMobileFly()
+
+    local camera = workspace.CurrentCamera
+    local Signal2 = game:GetService("RunService").RenderStepped:Connect(function()
+        local character = speaker.Character
+        if character and character:FindFirstChild("Humanoid") and character.HumanoidRootPart then
+            local hrp = character.HumanoidRootPart
+            local gyro = hrp:FindFirstChild("GyroHandler")
+            local velocity = hrp:FindFirstChild("VelocityHandler")
+
+            if gyro and velocity then
+                velocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+                gyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+                character.Humanoid.PlatformStand = true
+                gyro.CFrame = camera.CFrame
+
+                local direction = controlModule:GetMoveVector()
+                velocity.Velocity = Vector3.zero
+                velocity.Velocity = velocity.Velocity + camera.CFrame.RightVector * direction.X * speed
+                velocity.Velocity = velocity.Velocity - camera.CFrame.LookVector * direction.Z * speed
+            end
+        end
+    end)
+
+    addcmd("unmobilefly", {"unmfly"}, function(args, speaker)
+        local char = speaker.Character
+        if char and char.HumanoidRootPart then
+            local hrp = char.HumanoidRootPart
+            if hrp:FindFirstChild("VelocityHandler") then
+                hrp.VelocityHandler:Destroy()
+            end
+            if hrp:FindFirstChild("GyroHandler") then
+                hrp.GyroHandler:Destroy()
+            end
+            char.Humanoid.PlatformStand = false
+        end
+
+        if Signal1 then Signal1:Disconnect() end
+        if Signal2 then Signal2:Disconnect() end
+        notify("MobileFly", "Fly mode disabled.")
+    end)
+
+    notify("MobileFly", "Fly mode enabled.")
 end)
