@@ -4704,6 +4704,7 @@ CMDs[#CMDs + 1] = {NAME = 'TRUCaptain / TRUCaptainUni', DESC = 'TRU Captain Unif
 CMDs[#CMDs + 1] = {NAME = 'feflip', DESC = 'You flip when jumping'}
 CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the player.'}
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
+CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Re-enables blinking effects for the player.'}
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -12977,7 +12978,6 @@ addcmd("orbit", {}, function(args, speaker)
     end
 end)
 addcmd("antiblink", {}, function(args, speaker)
-    -- Función para desactivar los efectos de parpadeo
     local function disableBlinkEffects()
         local lighting = game:GetService("Lighting")
         local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
@@ -12992,23 +12992,19 @@ addcmd("antiblink", {}, function(args, speaker)
         end
     end
 
-    -- Desactivar los efectos de parpadeo inmediatamente
     disableBlinkEffects()
 
-    -- Conectar a la función de desactivación de parpadeo para cada Heartbeat
     local connection
     connection = game:GetService("RunService").Heartbeat:Connect(function()
         disableBlinkEffects()
     end)
 
-    -- Desconectar el antiblink con un comando adicional
     addcmd("unantiblink", {}, function(args, speaker)
         -- Desconectar la función de antiblink
         if connection then
             connection:Disconnect()
         end
 
-        -- Reactivar los efectos de parpadeo
         local lighting = game:GetService("Lighting")
         local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
         local cc = lighting:FindFirstChild("Blink_Overlay_CC")
@@ -13035,6 +13031,74 @@ addcmd("unorbit", {}, function(args, speaker)
     if args[1] ~= "nonotify" then notify("Orbit", "Stopped orbiting player") end
 end)
 walkflinging = false
+addcmd("mobilefly", {}, function(args, speaker)
+    local speed = tonumber(args[1]) or 50 -- Velocidad predeterminada si no se proporciona un argumento
+    local controlModule = require(speaker.PlayerScripts:WaitForChild('PlayerModule'):WaitForChild("ControlModule"))
+    
+    local function enableMobileFly()
+        local bv = Instance.new("BodyVelocity")
+        bv.Name = "VelocityHandler"
+        bv.Parent = speaker.Character.HumanoidRootPart
+        bv.MaxForce = Vector3.new(0, 0, 0)
+        bv.Velocity = Vector3.new(0, 0, 0)
+
+        local bg = Instance.new("BodyGyro")
+        bg.Name = "GyroHandler"
+        bg.Parent = speaker.Character.HumanoidRootPart
+        bg.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+        bg.P = 1000
+        bg.D = 50
+    end
+
+    local function onCharacterAdded(char)
+        enableMobileFly()
+    end
+
+    local Signal1 = speaker.CharacterAdded:Connect(onCharacterAdded)
+    enableMobileFly()
+
+    local camera = workspace.CurrentCamera
+    local Signal2 = game:GetService("RunService").RenderStepped:Connect(function()
+        local character = speaker.Character
+        if character and character:FindFirstChild("Humanoid") and character.HumanoidRootPart then
+            local hrp = character.HumanoidRootPart
+            local gyro = hrp:FindFirstChild("GyroHandler")
+            local velocity = hrp:FindFirstChild("VelocityHandler")
+
+            if gyro and velocity then
+                velocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+                gyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+                character.Humanoid.PlatformStand = true
+                gyro.CFrame = camera.CFrame
+
+                local direction = controlModule:GetMoveVector()
+                velocity.Velocity = Vector3.zero
+                velocity.Velocity = velocity.Velocity + camera.CFrame.RightVector * direction.X * speed
+                velocity.Velocity = velocity.Velocity - camera.CFrame.LookVector * direction.Z * speed
+            end
+        end
+    end)
+
+    addcmd("unmobilefly", {}, function(args, speaker)
+        local char = speaker.Character
+        if char and char.HumanoidRootPart then
+            local hrp = char.HumanoidRootPart
+            if hrp:FindFirstChild("VelocityHandler") then
+                hrp.VelocityHandler:Destroy()
+            end
+            if hrp:FindFirstChild("GyroHandler") then
+                hrp.GyroHandler:Destroy()
+            end
+            char.Humanoid.PlatformStand = false
+        end
+
+        if Signal1 then Signal1:Disconnect() end
+        if Signal2 then Signal2:Disconnect() end
+        notify("MobileFly", "Fly mode disabled.")
+    end)
+
+    notify("MobileFly", "Fly mode enabled.")
+end)
 addcmd("walkfling", {}, function(args, speaker)
     execCmd("unwalkfling")
     local humanoid = speaker.Character:FindFirstChildWhichIsA("Humanoid")
