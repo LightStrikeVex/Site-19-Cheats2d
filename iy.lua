@@ -13033,7 +13033,7 @@ addcmd("unorbit", {}, function(args, speaker)
     if args[1] ~= "nonotify" then notify("Orbit", "Stopped orbiting player") end
 end)
 walkflinging = false
-addcmd("mobilefly", {}, function(args, speaker)
+addcmd("mobilefly", {"mfly"}, function(args, speaker)
     local speed = tonumber(args[1]) or 50 -- Velocidad predeterminada si no se proporciona un argumento
     local controlModule = require(speaker.PlayerScripts:WaitForChild('PlayerModule'):WaitForChild("ControlModule"))
     
@@ -13081,7 +13081,7 @@ addcmd("mobilefly", {}, function(args, speaker)
         end
     end)
 
-    addcmd("unmobilefly", {}, function(args, speaker)
+addcmd("unmobilefly", {"unmfly"}, function(args, speaker)
         local char = speaker.Character
         if char and char.HumanoidRootPart then
             local hrp = char.HumanoidRootPart
