@@ -4707,6 +4707,8 @@ CMDs[#CMDs + 1] = {NAME = 'wallwalk / walkonwalls', DESC = 'Walk on walls'}
 CMDs[#CMDs + 1] = {NAME = 'removeads / adblock', DESC = 'Automatically removes ad billboards'}
 CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blink effects and keeps them off'}
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Reactivates the effects and stops monitoring blink effects'}
+CMDs[#CMDs + 1] = {NAME = 'loopreset', DESC = 'loop reset'}
+CMDs[#CMDs + 1] = {NAME = 'unloopreset', DESC = 'un loop reset >:('}
 wait()
 
 for i = 1, #CMDs do
@@ -12894,4 +12896,17 @@ addcmd("mobilefly", {"mfly"}, function(args, speaker)
     end)
 
     notify("MobileFly", "Fly mode enabled.")
+end)
+addcmd("loopreset", {}, function(args, speaker)
+    game:GetService("RunService").Heartbeat:Connect(function()
+        speaker.Character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Dead)
+    end)
+    notify("Loopreset", "Loop reset has been activated.")
+end)
+
+addcmd("unloopreset", {}, function(args, speaker)
+    for _, connection in pairs(getconnections(game:GetService("RunService").Heartbeat)) do
+        connection:Disconnect()
+    end
+    notify("Loopreset", "Loop reset has been deactivated.")
 end)
