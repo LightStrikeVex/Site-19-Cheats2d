@@ -4702,6 +4702,8 @@ CMDs[#CMDs + 1] = {NAME = 'DOATools', DESC = 'made for me, I guess..'}
 CMDs[#CMDs + 1] = {NAME = 'B12Uni / B12Uniform', DESC = 'Bravo 12 [CLIENT]'}
 CMDs[#CMDs + 1] = {NAME = 'TRUCaptain / TRUCaptainUni', DESC = 'TRU Captain Uniform [CLIENT]'}
 CMDs[#CMDs + 1] = {NAME = 'feflip', DESC = 'You flip when jumping'}
+CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the player.'}
+CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -12974,7 +12976,64 @@ addcmd("orbit", {}, function(args, speaker)
         notify("Orbit", "Started orbiting " .. formatUsername(target))
     end
 end)
+addcmd("antiblink", {}, function(args, speaker)
+    if antiblinkActive then
+        notify("Antiblink", "Already disabled.")
+        return
+    end
 
+    antiblinkActive = true
+    local lighting = game:GetService("Lighting")
+    local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
+    local cc = lighting:FindFirstChild("Blink_Overlay_CC")
+
+    if blur then
+        blur.Enabled = false
+        table.insert(antiblinkConnections, blur:GetPropertyChangedSignal("Enabled"):Connect(function()
+            if blur.Enabled then
+                blur.Enabled = false
+            end
+        end))
+    end
+
+    if cc then
+        cc.Enabled = false
+        table.insert(antiblinkConnections, cc:GetPropertyChangedSignal("Enabled"):Connect(function()
+            if cc.Enabled then
+                cc.Enabled = false
+            end
+        end))
+    end
+
+    notify("Antiblink", "Blink effects disabled.")
+end)
+
+addcmd("unantiblink", {}, function(args, speaker)
+    if not antiblinkActive then
+        notify("Antiblink", "Blink effects are already active.")
+        return
+    end
+
+    antiblinkActive = false
+    for _, connection in ipairs(antiblinkConnections) do
+        connection:Disconnect()
+    end
+    antiblinkConnections = {}
+
+    local lighting = game:GetService("Lighting")
+    local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
+    local cc = lighting:FindFirstChild("Blink_Overlay_CC")
+
+    if blur then
+        blur.Enabled = true
+    end
+
+    if cc then
+        cc.Enabled = true
+    end
+
+    notify("Antiblink", "Blink effects re-enabled.")
+end)
 addcmd("unorbit", {}, function(args, speaker)
     if orbit1 then orbit1:Disconnect() end
     if orbit2 then orbit2:Disconnect() end
