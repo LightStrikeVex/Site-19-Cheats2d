@@ -12977,63 +12977,56 @@ addcmd("orbit", {}, function(args, speaker)
     end
 end)
 addcmd("antiblink", {}, function(args, speaker)
-    if antiblinkActive then
-        notify("Antiblink", "Already disabled.")
-        return
+    -- Función para desactivar los efectos de parpadeo
+    local function disableBlinkEffects()
+        local lighting = game:GetService("Lighting")
+        local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
+        local cc = lighting:FindFirstChild("Blink_Overlay_CC")
+
+        if blur and blur.Enabled then
+            blur.Enabled = false
+        end
+
+        if cc and cc.Enabled then
+            cc.Enabled = false
+        end
     end
 
-    antiblinkActive = true
-    local lighting = game:GetService("Lighting")
-    local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
-    local cc = lighting:FindFirstChild("Blink_Overlay_CC")
+    -- Desactivar los efectos de parpadeo inmediatamente
+    disableBlinkEffects()
 
-    if blur then
-        blur.Enabled = false
-        table.insert(antiblinkConnections, blur:GetPropertyChangedSignal("Enabled"):Connect(function()
-            if blur.Enabled then
-                blur.Enabled = false
-            end
-        end))
-    end
+    -- Conectar a la función de desactivación de parpadeo para cada Heartbeat
+    local connection
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        disableBlinkEffects()
+    end)
 
-    if cc then
-        cc.Enabled = false
-        table.insert(antiblinkConnections, cc:GetPropertyChangedSignal("Enabled"):Connect(function()
-            if cc.Enabled then
-                cc.Enabled = false
-            end
-        end))
-    end
+    -- Desconectar el antiblink con un comando adicional
+    addcmd("unantiblink", {}, function(args, speaker)
+        -- Desconectar la función de antiblink
+        if connection then
+            connection:Disconnect()
+        end
 
-    notify("Antiblink", "Blink effects disabled.")
+        -- Reactivar los efectos de parpadeo
+        local lighting = game:GetService("Lighting")
+        local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
+        local cc = lighting:FindFirstChild("Blink_Overlay_CC")
+
+        if blur then
+            blur.Enabled = true
+        end
+
+        if cc then
+            cc.Enabled = true
+        end
+
+        notify("Antiblink", "Blink effects re-enabled and monitoring stopped.")
+    end)
+
+    notify("Antiblink", "Blink effects disabled and monitoring activated.")
 end)
 
-addcmd("unantiblink", {}, function(args, speaker)
-    if not antiblinkActive then
-        notify("Antiblink", "Blink effects are already active.")
-        return
-    end
-
-    antiblinkActive = false
-    for _, connection in ipairs(antiblinkConnections) do
-        connection:Disconnect()
-    end
-    antiblinkConnections = {}
-
-    local lighting = game:GetService("Lighting")
-    local blur = lighting:FindFirstChild("Blink_Overlay_Blur")
-    local cc = lighting:FindFirstChild("Blink_Overlay_CC")
-
-    if blur then
-        blur.Enabled = true
-    end
-
-    if cc then
-        cc.Enabled = true
-    end
-
-    notify("Antiblink", "Blink effects re-enabled.")
-end)
 addcmd("unorbit", {}, function(args, speaker)
     if orbit1 then orbit1:Disconnect() end
     if orbit2 then orbit2:Disconnect() end
