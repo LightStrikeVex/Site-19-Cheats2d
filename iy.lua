@@ -4704,7 +4704,9 @@ CMDs[#CMDs + 1] = {NAME = 'TRUCaptain / TRUCaptainUni', DESC = 'TRU Captain Unif
 CMDs[#CMDs + 1] = {NAME = 'feflip', DESC = 'You flip when jumping'}
 CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the player.'}
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
-CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Re-enables blinking effects for the player.'}
+CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
+CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
+wait()
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
