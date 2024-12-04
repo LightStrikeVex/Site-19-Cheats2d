@@ -4706,6 +4706,8 @@ CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
+CMDs[#CMDs + 1] = {NAME = 'espv2', DESC = 'ESP v2'}
+CMDs[#CMDs + 1] = {NAME = 'unespv2', DESC = 'unESP v2'}
 wait()
 wait()
 for i = 1, #CMDs do
@@ -12300,6 +12302,83 @@ addcmd('682HP',{''},function(args, speaker)
 end)
 addcmd('1048HP',{''},function(args, speaker)
 	notify(game.Workspace.SCP["1048"].Humanoid.Health .. "HP")
+end)
+
+-- Comando para activar el ESP
+addcmd('espv2', {}, function(args, speaker)
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local Players = game:GetService("Players")
+    local LP = Players.LocalPlayer
+    local COREGUI = game.CoreGui
+    
+    -- Función para crear y actualizar los ESP
+    local function CreateHighlight(plr)
+        if plr.Character and plr.Character:FindFirstChild('Head') then
+            local ESPholder = Instance.new("Folder")
+            ESPholder.Name = plr.Name..'_ESP'
+            ESPholder.Parent = COREGUI
+
+            local BillboardGui = Instance.new("BillboardGui")
+            local TextLabel = Instance.new("TextLabel")
+            BillboardGui.Adornee = plr.Character.Head
+            BillboardGui.Name = plr.Name
+            BillboardGui.Parent = ESPholder
+            BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+            BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+            BillboardGui.AlwaysOnTop = true
+            TextLabel.Parent = BillboardGui
+            TextLabel.BackgroundTransparency = 1
+            TextLabel.Position = UDim2.new(0, 0, 0, -50)
+            TextLabel.Size = UDim2.new(0, 100, 0, 100)
+            TextLabel.Font = Enum.Font.SourceSansSemibold
+            TextLabel.TextSize = 17
+            TextLabel.TextColor3 = Color3.new(12, 4, 20)
+            TextLabel.TextStrokeTransparency = 0.3
+            TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+            TextLabel.Text = '@'..plr.Name .. ' | ' .. plr.DisplayName .. ''
+            TextLabel.ZIndex = 10
+        end
+    end
+
+    -- Aplicar el ESP a todos los jugadores
+    for _, plr in pairs(Players:GetChildren()) do
+        if plr.Name ~= LP.Name then
+            CreateHighlight(plr)
+        end
+    end
+
+    -- Aplicar el ESP a los nuevos jugadores que se unan
+    Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function(character)
+            wait(2)
+            CreateHighlight(player)
+        end)
+    end)
+
+end)
+
+-- Comando para desactivar el ESP (UnESP)
+addcmd('unespv2', {'unespv2'}, function(args, speaker)
+    local COREGUI = game.CoreGui
+
+    -- Destruir los ESP existentes de todos los jugadores
+    for _, b in pairs(COREGUI:GetChildren()) do
+        if b:IsA("Folder") and string.sub(b.Name, -4) == '_ESP' then
+            b:Destroy()
+        end
+    end
+
+    -- Destruir los ESP de nuevos jugadores que se unan
+    game.Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function(character)
+            for _, b in pairs(COREGUI:GetChildren()) do
+                if b:IsA("Folder") and string.sub(b.Name, -4) == '_ESP' then
+                    b:Destroy()
+                end
+            end
+        end)
+    end)
+
 end)
 
 addcmd('team', {''}, function(args, speaker)
