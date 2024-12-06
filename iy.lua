@@ -12596,10 +12596,12 @@ addcmd('Truniform', {''}, function(args, speaker)
     character.Pants.PantsTemplate = "rbxassetid://12823105001"
 end)
 
-addcmd('anal', {''}, function(args, speaker)
-    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TeamChangerFE"):FireServer(game:GetService("Teams"):WaitForChild("MTF Omega-1"))
+addcmd('b-7', {''}, function(args, speaker)
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TeamChangerFE"):FireServer(game:GetService("Teams"):WaitForChild("MTF Beta-7"))
 end)
-
+addcmd('sid', {''}, function(args, speaker)
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TeamChangerFE"):FireServer(game:GetService("Teams"):WaitForChild("Site Director"))
+end)
 addcmd('CDtools', {''}, function(args, speaker)
     local iargs = {
     [1] = "GiveTool",
