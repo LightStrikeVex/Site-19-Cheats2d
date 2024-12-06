@@ -4706,7 +4706,8 @@ CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
-CMDs[#CMDs + 1] = {NAME = 'anal', DESC = 'testing a old shit'}
+CMDs[#CMDs + 1] = {NAME = 'b-7', DESC = 'testing a old shit'}
+CMDs[#CMDs + 1] = {NAME = 'sid', DESC = 'testing a old shit'}
 wait()
 wait()
 for i = 1, #CMDs do
