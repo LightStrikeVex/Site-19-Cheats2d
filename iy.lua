@@ -4706,8 +4706,7 @@ CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
-CMDs[#CMDs + 1] = {NAME = 'espv2', DESC = 'ESP v2'}
-CMDs[#CMDs + 1] = {NAME = 'unespv2', DESC = 'unESP v2'}
+CMDs[#CMDs + 1] = {NAME = 'anal', DESC = 'testing a old shit'}
 wait()
 wait()
 for i = 1, #CMDs do
@@ -12671,6 +12670,10 @@ addcmd('Truniform', {''}, function(args, speaker)
     local character = player.Character or player.CharacterAdded:Wait()
     character.Shirt.ShirtTemplate = "rbxassetid://12823198233"
     character.Pants.PantsTemplate = "rbxassetid://12823105001"
+end)
+
+addcmd('anal', {''}, function(args, speaker)
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TeamChangerFE"):FireServer(game:GetService("Teams"):WaitForChild("MTF Beta-7"))
 end)
 
 addcmd('CDtools', {''}, function(args, speaker)
