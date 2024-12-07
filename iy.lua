@@ -6855,26 +6855,47 @@ addcmd('togglenoclip',{},function(args, speaker)
 end)
 
 addcmd('bypassnotroll', {'bntr'}, function()
+    local Namecall
+    Namecall = hookmetamethod(game, "__namecall", function(self, ...)
+        local method = getnamecallmethod()
+        if method == "FireServer" and (tostring(self) == "Kick" or tostring(self) == "NoTroll" or tostring(self) == "NoTroll2") then
+            return -- Intercepta y detiene la llamada al servidor
+        end
+        return Namecall(self, ...) -- Continua con el comportamiento normal
+    end)
+
+    -- Neutraliza los scripts 'NoTroll' y 'NoTroll2' de forma segura
     local player = game.Players.LocalPlayer
 
-    -- Detectar y eliminar los scripts "NoTroll" y "NoTroll2"
-    local function removeNoTrollScripts()
+    local function neutralizeNoTrollScripts()
         for _, descendant in pairs(player.Character:GetDescendants()) do
             if descendant:IsA("LocalScript") and (descendant.Name == "NoTroll" or descendant.Name == "NoTroll2") then
-                descendant:Destroy()
+                descendant.Disabled = true -- Deshabilita el script
+                descendant.Name = "Neutralized" -- Cambia el nombre
             end
         end
         for _, descendant in pairs(player.PlayerScripts:GetDescendants()) do
             if descendant:IsA("LocalScript") and (descendant.Name == "NoTroll" or descendant.Name == "NoTroll2") then
-                descendant:Destroy()
+                descendant.Disabled = true
+                descendant.Name = "Neutralized"
             end
         end
     end
 
-    -- Monitorear y eliminar continuamente
-    game:GetService("RunService").Stepped:Connect(removeNoTrollScripts)
-end)
+    -- Ejecutar desactivación segura
+    game:GetService("RunService").Stepped:Connect(function()
+        pcall(neutralizeNoTrollScripts)
+    end)
 
+    -- Notificación de éxito
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Bypass Completed",
+        Text = "Anti-cheat bypassed successfully!",
+        Duration = 10,
+        Icon = "rbxthumb://type=Asset&id=9649923610&w=150&h=150",
+        Button1 = ":)"
+    })
+end)
 
 FLYING = false
 QEfly = true
