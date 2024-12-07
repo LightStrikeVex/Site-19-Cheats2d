@@ -6854,44 +6854,26 @@ addcmd('togglenoclip',{},function(args, speaker)
 	end
 end)
 
-addcmd('bypassnotroll', {'bntr'}, function()
+addcmd('bypasskick', {'bpk'}, function()
+    -- Definir el hook para interceptar la función __namecall
     local Namecall
     Namecall = hookmetamethod(game, "__namecall", function(self, ...)
         local method = getnamecallmethod()
-        if method == "FireServer" and (tostring(self) == "Kick" or tostring(self) == "NoTroll" or tostring(self) == "NoTroll2") then
-            return -- Intercepta y detiene la llamada al servidor
+
+        -- Prevenir la expulsión si el método es "Kick"
+        if method == "Kick" then
+            return
         end
-        return Namecall(self, ...) -- Continua con el comportamiento normal
+
+        -- Continuar con la llamada original para otros métodos
+        return Namecall(self, ...)
     end)
 
-    -- Neutraliza los scripts 'NoTroll' y 'NoTroll2' de forma segura
-    local player = game.Players.LocalPlayer
-
-    local function neutralizeNoTrollScripts()
-        for _, descendant in pairs(player.Character:GetDescendants()) do
-            if descendant:IsA("LocalScript") and (descendant.Name == "NoTroll" or descendant.Name == "NoTroll2") then
-                descendant.Disabled = true -- Deshabilita el script
-                descendant.Name = "Neutralized" -- Cambia el nombre
-            end
-        end
-        for _, descendant in pairs(player.PlayerScripts:GetDescendants()) do
-            if descendant:IsA("LocalScript") and (descendant.Name == "NoTroll" or descendant.Name == "NoTroll2") then
-                descendant.Disabled = true
-                descendant.Name = "Neutralized"
-            end
-        end
-    end
-
-    -- Ejecutar desactivación segura
-    game:GetService("RunService").Stepped:Connect(function()
-        pcall(neutralizeNoTrollScripts)
-    end)
-
-    -- Notificación de éxito
+    -- Notificación para confirmar que el bypass ha sido activado
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Bypass Completed",
-        Text = "Anti-cheat bypassed successfully!",
-        Duration = 10,
+        Title = "Bypass Kick Activated",
+        Text = "The kick method has been bypassed.",
+        Duration = 5,
         Icon = "rbxthumb://type=Asset&id=9649923610&w=150&h=150",
         Button1 = ":)"
     })
