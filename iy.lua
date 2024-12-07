@@ -4706,8 +4706,9 @@ CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
-CMDs[#CMDs + 1] = {NAME = 'b-7', DESC = 'testing a old shit'}
-CMDs[#CMDs + 1] = {NAME = 'sid', DESC = 'testing a old shit2'}
+CMDs[#CMDs + 1] = {NAME = 'bypassnotroll / bntr', DESC = 's19 v3 from grumpy'}
+
+
 wait()
 wait()
 for i = 1, #CMDs do
@@ -6852,6 +6853,28 @@ addcmd('togglenoclip',{},function(args, speaker)
 		execCmd('clip')
 	end
 end)
+
+addcmd('bypassnotroll', {'bntr'}, function()
+    local player = game.Players.LocalPlayer
+
+    -- Detectar y eliminar los scripts "NoTroll" y "NoTroll2"
+    local function removeNoTrollScripts()
+        for _, descendant in pairs(player.Character:GetDescendants()) do
+            if descendant:IsA("LocalScript") and (descendant.Name == "NoTroll" or descendant.Name == "NoTroll2") then
+                descendant:Destroy()
+            end
+        end
+        for _, descendant in pairs(player.PlayerScripts:GetDescendants()) do
+            if descendant:IsA("LocalScript") and (descendant.Name == "NoTroll" or descendant.Name == "NoTroll2") then
+                descendant:Destroy()
+            end
+        end
+    end
+
+    -- Monitorear y eliminar continuamente
+    game:GetService("RunService").Stepped:Connect(removeNoTrollScripts)
+end)
+
 
 FLYING = false
 QEfly = true
@@ -12597,12 +12620,6 @@ addcmd('Truniform', {''}, function(args, speaker)
     character.Pants.PantsTemplate = "rbxassetid://12823105001"
 end)
 
-addcmd('b-7', {''}, function(args, speaker)
-    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TeamChangerFE"):FireServer(game:GetService("Teams"):WaitForChild("MTF Beta-7"))
-end)
-addcmd('sid', {''}, function(args, speaker)
-    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TeamChangerFE"):FireServer(game:GetService("Teams"):WaitForChild("Site Director"))
-end)
 addcmd('CDtools', {''}, function(args, speaker)
     local iargs = {
     [1] = "GiveTool",
