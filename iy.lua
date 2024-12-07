@@ -4706,7 +4706,7 @@ CMDs[#CMDs + 1] = {NAME = 'antiblink', DESC = 'Disables blinking effects for the
 CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for the player.'}
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
-CMDs[#CMDs + 1] = {NAME = 'bypassnotroll / bntr', DESC = 's19 v3 from grumpy'}
+CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
 
 
 wait()
