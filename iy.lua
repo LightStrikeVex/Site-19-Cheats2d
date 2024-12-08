@@ -10410,52 +10410,76 @@ addcmd('unbang',{'unrape'},function(args, speaker)
 		bangAnim:Destroy()
 	end
 end)
-
 addcmd('headbang',{'mouthbang'},function(args, speaker)
-	RunService = game:GetService("RunService")
+    local RunService = game:GetService("RunService")
 
-	local speed = args[2] or 10
-	local players = getPlayer(args[1], speaker)
+    local speed = args[2] or 10  -- Si no se pasa velocidad, usa 10 por defecto
+    local players = getPlayer(args[1], speaker)  -- Obtén los jugadores a los que se les aplicará la animación
 
-	for _, targetPlayer in pairs(players) do
-		bangAnim = Instance.new("Animation")
-		if not r15(speaker) then
-			bangAnim.AnimationId = "rbxassetid://148840371"
-		else
-			bangAnim.AnimationId = "rbxassetid://5918726674"
-		end
+    for _, targetPlayer in pairs(players) do
+        -- Crear la animación
+        local bangAnim = Instance.new("Animation")
+        -- Verifica si el jugador usa R6 o R15 para asignar el ID de animación correcto
+        if not r15(speaker) then
+            bangAnim.AnimationId = "rbxassetid://148840371"  -- R6
+        else
+            bangAnim.AnimationId = "rbxassetid://5918726674"  -- R15
+        end
 
-		bang = speaker.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
-		bang:Play(.1, 1, 1)
-		bang:AdjustSpeed(speed)
+        -- Cargar y reproducir la animación
+        local bang = speaker.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
+        bang:Play(.1, 1, 1)
+        bang:AdjustSpeed(speed)
 
-		local targetPlayerName = targetPlayer.Name
-		bangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
-			bangLoop = bangLoop:Disconnect()
-			bang:Stop()
-			bangAnim:Destroy()
-			bangDied:Disconnect()
-		end)
+        -- Obtener el nombre del jugador objetivo
+        local targetPlayerName = targetPlayer.Name
 
-		local bangOffset = CFrame.new(0, 1, -1.1)
-		bangLoop = RunService.Stepped:Connect(function()
-			pcall(function()
-				local otherRoot = getTorso(Players[targetPlayerName].Character)
-				getRoot(speaker.Character).CFrame = otherRoot.CFrame * bangOffset
-			end)
-		end)
-	end
+        -- Evento para detener la animación si el humanoide del speaker muere
+        local bangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
+            if bangLoop then
+                bangLoop:Disconnect()
+            end
+            bang:Stop()
+            bangAnim:Destroy()
+            bangDied:Disconnect()
+        end)
+
+        -- Desplazamiento para mover al speaker hacia la cabeza del targetPlayer
+        local bangOffset = CFrame.new(0, 1, -1.1)
+        
+        -- Bucle para actualizar constantemente la posición del speaker cerca de la cabeza del targetPlayer
+        local bangLoop = RunService.Stepped:Connect(function()
+            pcall(function()
+                -- Verifica que ambos jugadores estén presentes
+                if targetPlayer.Character and speaker.Character then
+                    local otherHead = targetPlayer.Character:FindFirstChild("Head")
+                    local speakerHumanoidRoot = speaker.Character:FindFirstChild("HumanoidRootPart")
+                    
+                    if otherHead and speakerHumanoidRoot then
+                        -- Mueve al speaker hacia la cabeza del jugador objetivo
+                        speakerHumanoidRoot.CFrame = otherHead.CFrame * bangOffset
+
+                        -- Ajusta la orientación del speaker para mirar al objetivo
+                        local speakerPos = speakerHumanoidRoot.Position
+                        local targetPos = otherHead.Position
+                        local lookAtCFrame = CFrame.new(speakerPos, targetPos)
+                        speakerHumanoidRoot.CFrame = lookAtCFrame
+                    end
+                end
+            end)
+        end)
+    end
 end)
 
+-- Comando para detener el headbang
 addcmd('unheadbang',{'unmouthbang'},function(args, speaker)
-	if bangLoop then
-		bangLoop = bangLoop:Disconnect()
-		bang:Stop()
-		bangAnim:Destroy()
-		bangDied:Disconnect()
-	end
+    if bangLoop then
+        bangLoop:Disconnect()
+        bang:Stop()
+        bangAnim:Destroy()
+        bangDied:Disconnect()
+    end
 end)
-
 
 addcmd('carpet',{},function(args, speaker)
 	if not r15(speaker) then
