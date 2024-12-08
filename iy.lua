@@ -10410,74 +10410,64 @@ addcmd('unbang',{'unrape'},function(args, speaker)
 		bangAnim:Destroy()
 	end
 end)
-addcmd('headbang',{'mouthbang'},function(args, speaker)
-    local RunService = game:GetService("RunService")
 
-    local speed = args[2] or 10  -- Si no se pasa velocidad, usa 10 por defecto
-    local players = getPlayer(args[1], speaker)  -- Obtén los jugadores a los que se les aplicará la animación
+addcmd('headbang', {'mouthbang'}, function(args, speaker)
+    -- Usamos RunService para controlar los eventos durante la animación
+    local speed = args[2] or 10  -- Si no se especifica la velocidad, se usa 10 como predeterminado
+    local Username = args[1]  -- El nombre del jugador al que se le realizará el headbang
+    
+    -- Obtenemos el jugador objetivo
+    local players = getPlayer(Username, speaker)
+    
+    -- Creamos la animación del Headbang
+    local headbangAnim = Instance.new("Animation")
+    if not r15(speaker) then
+        headbangAnim.AnimationId = "rbxassetid://148840371"  -- Animación para R6
+    else
+        headbangAnim.AnimationId = "rbxassetid://5918726674"  -- Animación para R15
+    end
 
-    for _, targetPlayer in pairs(players) do
-        -- Crear la animación
-        local bangAnim = Instance.new("Animation")
-        -- Verifica si el jugador usa R6 o R15 para asignar el ID de animación correcto
-        if not r15(speaker) then
-            bangAnim.AnimationId = "rbxassetid://148840371"  -- R6
-        else
-            bangAnim.AnimationId = "rbxassetid://5918726674"  -- R15
-        end
+    -- Cargamos la animación en el humanoide del speaker
+    local headbang = speaker.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(headbangAnim)
+    headbang:Play(0.1, 1, 1)
+    headbang:AdjustSpeed(speed)  -- Ajustamos la velocidad de la animación
+    
+    for _, v in pairs(players) do
+        local targetPlayer = Players[v].Name  -- Nombre del jugador objetivo
+        local headbangDied  -- Evento para detener la animación si el speaker muere
 
-        -- Cargar y reproducir la animación
-        local bang = speaker.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
-        bang:Play(.1, 1, 1)
-        bang:AdjustSpeed(speed)
-
-        -- Obtener el nombre del jugador objetivo
-        local targetPlayerName = targetPlayer.Name
-
-        -- Evento para detener la animación si el humanoide del speaker muere
-        local bangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
-            if bangLoop then
-                bangLoop:Disconnect()
+        -- Evento para cuando el speaker muera, desconectar todos los eventos y detener la animación
+        headbangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
+            if headbangLoop then
+                headbangLoop:Disconnect()
             end
-            bang:Stop()
-            bangAnim:Destroy()
-            bangDied:Disconnect()
+            headbang:Stop()
+            headbangAnim:Destroy()
+            headbangDied:Disconnect()
         end)
-
-        -- Desplazamiento para mover al speaker hacia la cabeza del targetPlayer
-        local bangOffset = CFrame.new(0, 1, -1.1)
         
-        -- Bucle para actualizar constantemente la posición del speaker cerca de la cabeza del targetPlayer
-        local bangLoop = RunService.Stepped:Connect(function()
-            pcall(function()
-                -- Verifica que ambos jugadores estén presentes
-                if targetPlayer.Character and speaker.Character then
-                    local otherHead = targetPlayer.Character:FindFirstChild("Head")
-                    local speakerHumanoidRoot = speaker.Character:FindFirstChild("HumanoidRootPart")
-                    
-                    if otherHead and speakerHumanoidRoot then
-                        -- Mueve al speaker hacia la cabeza del jugador objetivo
-                        speakerHumanoidRoot.CFrame = otherHead.CFrame * bangOffset
+        -- Definimos el offset para el movimiento durante el headbang
+        local headbangOffset = CFrame.new(0, 1, -1.1)
 
-                        -- Ajusta la orientación del speaker para mirar al objetivo
-                        local speakerPos = speakerHumanoidRoot.Position
-                        local targetPos = otherHead.Position
-                        local lookAtCFrame = CFrame.new(speakerPos, targetPos)
-                        speakerHumanoidRoot.CFrame = lookAtCFrame
-                    end
-                end
+        -- Bucle para mover al speaker hacia el objetivo mientras se realiza la animación
+        local headbangLoop = RunService.Stepped:Connect(function()
+            pcall(function()
+                -- Obtenemos la cabeza del jugador objetivo
+                local targetHead = getHead(Players[targetPlayer].Character)
+                -- Movemos al speaker hacia el objetivo con el offset
+                getRoot(speaker.Character).CFrame = targetHead.CFrame * headbangOffset
             end)
         end)
     end
 end)
 
--- Comando para detener el headbang
-addcmd('unheadbang',{'unmouthbang'},function(args, speaker)
-    if bangLoop then
-        bangLoop:Disconnect()
-        bang:Stop()
-        bangAnim:Destroy()
-        bangDied:Disconnect()
+-- Comando para detener el Headbang
+addcmd('unheadbang', {'unmouthbang'}, function(args, speaker)
+    if headbangLoop then
+        headbangLoop:Disconnect()
+        headbang:Stop()
+        headbangAnim:Destroy()
+        headbangDied:Disconnect()
     end
 end)
 
