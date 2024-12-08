@@ -10411,7 +10411,24 @@ addcmd('unbang',{'unrape'},function(args, speaker)
 	end
 end)
 
-addcmd('headbang', {'mouthbang'}, function(args, speaker)
+-- Función para obtener el jugador por nombre
+local function getPlayer(username, speaker)
+    local players = {}
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Name:lower() == username:lower() then
+            table.insert(players, player)
+        end
+    end
+    return players
+end
+
+-- Función para obtener la cabeza del personaje (usada en Nameless)
+local function getHead(character)
+    return character:FindFirstChild("Head")  -- Asegura que se obtiene la cabeza del jugador
+end
+
+-- Comando para realizar el Headbang
+addcmd('headbang', {'hb', 'mouthbang'}, function(args, speaker)
     -- Usamos RunService para controlar los eventos durante la animación
     local speed = args[2] or 10  -- Si no se especifica la velocidad, se usa 10 como predeterminado
     local Username = args[1]  -- El nombre del jugador al que se le realizará el headbang
@@ -10449,12 +10466,12 @@ addcmd('headbang', {'mouthbang'}, function(args, speaker)
         -- Definimos el offset para el movimiento durante el headbang
         local headbangOffset = CFrame.new(0, 1, -1.1)
 
-        -- Bucle para mover al speaker hacia el objetivo mientras se realiza la animación
+        -- Bucle para mover al speaker hacia la cabeza del objetivo mientras se realiza la animación
         local headbangLoop = RunService.Stepped:Connect(function()
             pcall(function()
-                -- Obtenemos la cabeza del jugador objetivo
+                -- Obtenemos la cabeza del jugador objetivo (función adaptada de Nameless)
                 local targetHead = getHead(Players[targetPlayer].Character)
-                -- Movemos al speaker hacia el objetivo con el offset
+                -- Movemos al speaker hacia la cabeza del objetivo con el offset
                 getRoot(speaker.Character).CFrame = targetHead.CFrame * headbangOffset
             end)
         end)
@@ -10462,7 +10479,7 @@ addcmd('headbang', {'mouthbang'}, function(args, speaker)
 end)
 
 -- Comando para detener el Headbang
-addcmd('unheadbang', {'unmouthbang'}, function(args, speaker)
+addcmd('unheadbang', {'unhb', 'unmouthbang'}, function(args, speaker)
     if headbangLoop then
         headbangLoop:Disconnect()
         headbang:Stop()
@@ -10470,6 +10487,7 @@ addcmd('unheadbang', {'unmouthbang'}, function(args, speaker)
         headbangDied:Disconnect()
     end
 end)
+
 
 addcmd('carpet',{},function(args, speaker)
 	if not r15(speaker) then
