@@ -4,7 +4,7 @@ if IY_LOADED and not _G.IY_DEBUG == true then
 end
 
 pcall(function() getgenv().IY_LOADED = true end)
-----loadstring(game:HttpGet("https://raw.githubusercontent.com/RelkzzRebranded/Bypassed---OBFUSCATED..../main/Adonis%20BYPASS.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RelkzzRebranded/Bypassed---OBFUSCATED..../main/Adonis%20BYPASS.lua"))()
 pcall(function() _G.IY_DEBUG = false end)
 
 COREGUI = game:GetService("CoreGui")
@@ -4707,11 +4707,6 @@ CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
 CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
-CMDs[#CMDs + 1] = {NAME = 'loadcharacter / lc', DESC = 'Your character will respawn automatically after death or reset.'}
-CMDs[#CMDs + 1] = {NAME = 'disableloadcharacter / dlc', DESC = 'Your character will no longer respawn automatically after death or reset.'}
-
-
-wait()
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -6854,57 +6849,6 @@ addcmd('togglenoclip',{},function(args, speaker)
 	else
 		execCmd('clip')
 	end
-end)
-
--- Comando para habilitar el auto-respawn (loadcharacter)
-addcmd('loadcharacter', {'lc'}, function()
-    local player = game.Players.LocalPlayer
-
-    -- Función para forzar el respawn
-    local function forceRespawn()
-        player:LoadCharacter()
-    end
-
-    -- Detecta cuando el personaje es agregado (cuando el jugador respawnea)
-    player.CharacterAdded:Connect(function(character)
-        local humanoid = character:WaitForChild("Humanoid")
-        
-        -- Detecta cuando el jugador muere
-        humanoid.Died:Connect(function()
-            -- Espera un momento antes de recargar el personaje
-            wait(0.1)
-            forceRespawn()
-        end)
-    end)
-
-    -- Notificación usando notify
-    notify("Auto-Respawn", "Your character will respawn automatically after death or reset.")
-end)
-
--- Comando para deshabilitar el auto-respawn (disableloadcharacter)
-addcmd('disableloadcharacter', {'dlc'}, function()
-    local player = game.Players.LocalPlayer
-
-    -- Desconectar la función que recarga el personaje en caso de muerte
-    local characterAddedConnection
-    local humanoidDiedConnection
-
-    -- Función para detener el respawn automático
-    local function disableAutoRespawn()
-        -- Desconectar las conexiones de CharacterAdded y Died
-        if characterAddedConnection then
-            characterAddedConnection:Disconnect()
-        end
-        if humanoidDiedConnection then
-            humanoidDiedConnection:Disconnect()
-        end
-    end
-
-    -- Notificación usando notify
-    notify("Auto-Respawn Disabled", "Your character will no longer respawn automatically after death or reset.")
-    
-    -- Llamar a la función para deshabilitar el respawn automático
-    disableAutoRespawn()
 end)
 
 addcmd('bypasskick', {'bpk'}, function()
