@@ -4707,6 +4707,8 @@ CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
 CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
+CMDs[#CMDs + 1] = {NAME = 'headbang / mouthbang', DESC = '-w-'}
+CMDs[#CMDs + 1] = {NAME = 'unheadbang / unmouthbang', DESC = 'pwp'}
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -10408,6 +10410,52 @@ addcmd('unbang',{'unrape'},function(args, speaker)
 		bangAnim:Destroy()
 	end
 end)
+
+addcmd('headbang',{'mouthbang'},function(args, speaker)
+	RunService = game:GetService("RunService")
+
+	local speed = args[2] or 10
+	local players = getPlayer(args[1], speaker)
+
+	for _, targetPlayer in pairs(players) do
+		bangAnim = Instance.new("Animation")
+		if not r15(speaker) then
+			bangAnim.AnimationId = "rbxassetid://148840371"
+		else
+			bangAnim.AnimationId = "rbxassetid://5918726674"
+		end
+
+		bang = speaker.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
+		bang:Play(.1, 1, 1)
+		bang:AdjustSpeed(speed)
+
+		local targetPlayerName = targetPlayer.Name
+		bangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
+			bangLoop = bangLoop:Disconnect()
+			bang:Stop()
+			bangAnim:Destroy()
+			bangDied:Disconnect()
+		end)
+
+		local bangOffset = CFrame.new(0, 1, -1.1)
+		bangLoop = RunService.Stepped:Connect(function()
+			pcall(function()
+				local otherRoot = getTorso(Players[targetPlayerName].Character)
+				getRoot(speaker.Character).CFrame = otherRoot.CFrame * bangOffset
+			end)
+		end)
+	end
+end)
+
+addcmd('unheadbang',{'unmouthbang'},function(args, speaker)
+	if bangLoop then
+		bangLoop = bangLoop:Disconnect()
+		bang:Stop()
+		bangAnim:Destroy()
+		bangDied:Disconnect()
+	end
+end)
+
 
 addcmd('carpet',{},function(args, speaker)
 	if not r15(speaker) then
