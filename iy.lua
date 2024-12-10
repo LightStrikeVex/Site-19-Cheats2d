@@ -4707,8 +4707,7 @@ CMDs[#CMDs + 1] = {NAME = 'unantiblink', DESC = 'Re-enables blinking effects for
 CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored for mobile devices, controlled via the virtual joystick.'}
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
 CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
-CMDs[#CMDs + 1] = {NAME = 'headbang / mouthbang', DESC = '-w-'}
-CMDs[#CMDs + 1] = {NAME = 'unheadbang / unmouthbang', DESC = 'pwp'}
+CMDs[#CMDs + 1] = {NAME = 'adonisbypass / adsbypass', DESC = 'Command to evade the adonis anti cheat without crashing.'}
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -12970,6 +12969,10 @@ addcmd('SendMessage', {''}, function(args, speaker)
 	end
 end)
 addcmd("wallwalk", {"walkonwalls"}, function(args, speaker)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/wallwalker.lua"))()
+end)
+
+addcmd("adonisbypass", {"adsbypass"}, function(args, speaker)
     loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/wallwalker.lua"))()
 end)
 
