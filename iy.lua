@@ -12973,7 +12973,7 @@ addcmd("wallwalk", {"walkonwalls"}, function(args, speaker)
 end)
 
 addcmd("adonisbypass", {"adsbypass"}, function(args, speaker)
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/wallwalker.lua"))()
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Adonis-Admin-Anti-Crash-18757"))()
 end)
 
 promptNewRig = function(speaker, rig)
