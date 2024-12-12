@@ -4708,6 +4708,7 @@ CMDs[#CMDs + 1] = {NAME = 'mobilefly', DESC = 'Enables a flight system tailored 
 CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized flight system and restores normal controls.'}
 CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
 CMDs[#CMDs + 1] = {NAME = 'adonisbypass / adsbypass', DESC = 'Command to evade the adonis anti cheat without crashing.'}
+CMDs[#CMDs + 1] = {NAME = 'adonisbypass / anal', DESC = 'test'}
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -6332,6 +6333,9 @@ addcmd('clraliases',{},function(args, speaker)
 	refreshaliases()
 end)
 
+addcmd('anal', {''}, function(args, speaker)
+    game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("TeamChangerFE"):FireServer(game:GetService("Teams"):WaitForChild("Analytics Dept."))
+		
 addcmd('discord', {'support', 'help'}, function(args, speaker)
 	if toClipboard then
 		toClipboard('https://discord.com/invite/dYHag43eeU')
