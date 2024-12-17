@@ -10418,11 +10418,26 @@ addcmd('unbang',{'unrape'},function(args, speaker)
 	end
 end)
 
+function getPlr(name, speaker)
+    local players = {}
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if string.lower(player.Name):find(string.lower(name)) then
+            table.insert(players, player)
+        end
+    end
+    return players
+end
+
 addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
     execCmd('unheadbang')
     wait()
     
     local players = getPlr(args[1], speaker)
+    if #players == 0 then
+        notify("No players found.")
+        return
+    end
+
     for _, v in pairs(players) do
         local bangAnim = Instance.new("Animation")
         if not r15(speaker) then
@@ -10440,7 +10455,7 @@ addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
             bang:AdjustSpeed(3)
         end
         
-        local bangplr = Players[v].Name
+        local bangplr = v.Name
         local bangDied
         
         bangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
@@ -10452,7 +10467,7 @@ addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
             bangDied:Disconnect()
         end)
 
-        local targetCharacter = Players[bangplr].Character
+        local targetCharacter = v.Character
         if targetCharacter and targetCharacter:FindFirstChild("Head") then
             local targetHead = targetCharacter.Head
             speaker.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
@@ -10468,8 +10483,8 @@ addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
 
             pcall(function()
                 local targetHead = targetCharacter.Head
+                -- Asegurarse de que el jugador local se mantenga en la cabeza del jugador objetivo
                 speaker.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
-            end)
         end)
     end
 end)
