@@ -12695,6 +12695,8 @@ end)
 addcmd('highlightscps', {}, function(args, speaker)
     local scpModels = {
         "SCP173",
+        "SCP049",
+        "SCP096",
         "SCP106",
         "SCP939",
         "SCP966"
