@@ -4709,6 +4709,7 @@ CMDs[#CMDs + 1] = {NAME = 'unmobilefly', DESC = 'Disables the mobile-optimized f
 CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
 CMDs[#CMDs + 1] = {NAME = 'adonisbypass / adsbypass', DESC = 'Command to evade the adonis anti cheat without crashing.'}
 CMDs[#CMDs + 1] = {NAME = 'anal', DESC = 'test doa team, why not'}
+CMDs[#CMDs + 1] = {NAME = 'highlightscps', DESC = 'AB2'} --12694
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -12690,6 +12691,28 @@ addcmd('destroyhighlight', {''}, function(args, speaker)
         execCmd('destroyhighlight 173')
     end
 end)
+
+addcmd('highlightscps', {}, function(args, speaker)
+    local scpModels = {
+        "SCP173",
+        "SCP106",
+        "SCP939",
+        "SCP966"
+    }  -- Lista de modelos SCP
+    local highlightColor = Color3.new(1, 0, 0)  -- Color del highlight (rojo)
+
+    for _, modelName in ipairs(scpModels) do
+        local model = workspace.SCPs:FindFirstChild(modelName)  -- Buscar el modelo en la carpeta SCPs
+        if model then
+            local highlight = Instance.new('Highlight')
+            highlight.Parent = model  -- Agregar el Highlight al modelo
+            highlight.FillColor = highlightColor  -- Establecer el color de relleno
+            highlight.OutlineColor = Color3.new(0, 0, 0)  -- Establecer el color del contorno (negro)
+        else
+            notify(modelName .. " no se encontró en la carpeta SCPs.")  -- Notificar si el modelo no se encuentra
+        end
+    end
+end)  -- Fin del comando
 
 addcmd('Truniform', {''}, function(args, speaker)
     local player = game:GetService("Players").LocalPlayer
