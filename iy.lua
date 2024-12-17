@@ -12902,6 +12902,7 @@ end)
 addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
     local RunService = game:GetService("RunService")
     
+    -- Establecer velocidad por defecto
     local speed = args[2] or 10
     
     local players = getPlr(args[1])
@@ -12933,13 +12934,23 @@ addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
         bangDied:Disconnect()
     end)
 
+    local targetCharacter = game.Players[bangplr].Character
+    if targetCharacter and targetCharacter:FindFirstChild("Head") then
+        local targetHead = targetCharacter.Head
+        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
+    end
+
     bangLoop = RunService.Stepped:Connect(function()
+        if not targetCharacter or not targetCharacter:FindFirstChild("Head") then
+            bangLoop:Disconnect()
+            bang:Stop()
+            bangAnim:Destroy()
+            return
+        end
+
         pcall(function()
-            local targetCharacter = game.Players[bangplr].Character
-            if targetCharacter and targetCharacter:FindFirstChild("Head") then
-                local targetHead = targetCharacter.Head
-                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
-            end
+            local targetHead = targetCharacter.Head
+            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
         end)
     end)
 end)
