@@ -12695,26 +12695,25 @@ end)
 addcmd('highlightscps', {}, function(args, speaker)
     local scpModels = {
         "SCP173",
-        "SCP049",
-        "SCP096",
         "SCP106",
         "SCP939",
-        "SCP966"
+        "SCP966",
+        "SCP049",
+        "SCP096"
     }  -- Lista de modelos SCP
-    local highlightColor = Color3.new(1, 0, 0)  -- Color del highlight (rojo)
+    local highlightColor = Color3.new(1, 0, 0)
 
     for _, modelName in ipairs(scpModels) do
-        local model = workspace.SCPs:FindFirstChild(modelName)  -- Buscar el modelo en la carpeta SCPs
-        if model then
-            local highlight = Instance.new('Highlight')
-            highlight.Parent = model  -- Agregar el Highlight al modelo
-            highlight.FillColor = highlightColor  -- Establecer el color de relleno
-            highlight.OutlineColor = Color3.new(0, 0, 0)  -- Establecer el color del contorno (negro)
-        else
-            notify(modelName .. " no se encontró en la carpeta SCPs.")  -- Notificar si el modelo no se encuentra
+        for _, model in ipairs(workspace.SCPs:GetChildren()) do
+            if model.Name == modelName then
+                local highlight = Instance.new('Highlight')
+                highlight.Parent = model
+                highlight.FillColor = highlightColor
+                highlight.OutlineColor = Color3.new(0, 0, 0)
+            end
         end
     end
-end)  -- Fin del comando
+end)
 
 addcmd('Truniform', {''}, function(args, speaker)
     local player = game:GetService("Players").LocalPlayer
