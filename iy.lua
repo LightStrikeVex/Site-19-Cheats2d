@@ -10418,6 +10418,71 @@ addcmd('unbang',{'unrape'},function(args, speaker)
 	end
 end)
 
+addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
+    execCmd('unheadbang')
+    wait()
+    
+    local players = getPlr(args[1], speaker)
+    for _, v in pairs(players) do
+        local bangAnim = Instance.new("Animation")
+        if not r15(speaker) then
+            bangAnim.AnimationId = "rbxassetid://148840371"
+        else
+            bangAnim.AnimationId = "rbxassetid://5918726674"
+        end
+        
+        local bang = speaker.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
+        bang:Play(0.1, 1, 1)
+        
+        if args[2] then
+            bang:AdjustSpeed(args[2])
+        else
+            bang:AdjustSpeed(3)
+        end
+        
+        local bangplr = Players[v].Name
+        local bangDied
+        
+        bangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
+            if bangLoop then
+                bangLoop:Disconnect()
+            end
+            bang:Stop()
+            bangAnim:Destroy()
+            bangDied:Disconnect()
+        end)
+
+        local targetCharacter = Players[bangplr].Character
+        if targetCharacter and targetCharacter:FindFirstChild("Head") then
+            local targetHead = targetCharacter.Head
+            speaker.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
+        end
+
+        bangLoop = RunService.Stepped:Connect(function()
+            if not targetCharacter or not targetCharacter:FindFirstChild("Head") then
+                bangLoop:Disconnect()
+                bang:Stop()
+                bangAnim:Destroy()
+                return
+            end
+
+            pcall(function()
+                local targetHead = targetCharacter.Head
+                speaker.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
+            end)
+        end)
+    end
+end)
+
+addcmd('unheadbang', {'unmouthbang', 'unhb', 'unmb'}, function(args, speaker)
+    if bangLoop then
+        bangLoop:Disconnect()
+        bang:Stop()
+        bangAnim:Destroy()
+        bangDied:Disconnect()
+    end
+end)
+
 addcmd('carpet',{},function(args, speaker)
 	if not r15(speaker) then
 		execCmd('uncarpet')
@@ -12819,71 +12884,6 @@ end)
 addcmd('unS19God', {''}, function(args, speaker)
     healthEnabled = false
     notify('Stopped godmode.')
-end)
-
-addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
-    local RunService = game:GetService("RunService")
-    
-    -- Establecer velocidad por defecto
-    local speed = args[2] or 10
-    
-    local players = getPlr(args[1])
-    if not players then
-        notify("Player not found.")
-        return
-    end
-
-    local bangAnim = Instance.new("Animation")
-    if not r15(game.Players.LocalPlayer) then
-        bangAnim.AnimationId = "rbxassetid://148840371"
-    else
-        bangAnim.AnimationId = "rbxassetid://5918726674"
-    end
-
-    local bang = game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
-    bang:Play(0.1, 1, 1)
-    bang:AdjustSpeed(speed)
-
-    local bangplr = players.Name
-    local bangDied
-
-    bangDied = game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
-        if bangLoop then
-            bangLoop:Disconnect()
-        end
-        bang:Stop()
-        bangAnim:Destroy()
-        bangDied:Disconnect()
-    end)
-
-    local targetCharacter = game.Players[bangplr].Character
-    if targetCharacter and targetCharacter:FindFirstChild("Head") then
-        local targetHead = targetCharacter.Head
-        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
-    end
-
-    bangLoop = RunService.Stepped:Connect(function()
-        if not targetCharacter or not targetCharacter:FindFirstChild("Head") then
-            bangLoop:Disconnect()
-            bang:Stop()
-            bangAnim:Destroy()
-            return
-        end
-
-        pcall(function()
-            local targetHead = targetCharacter.Head
-            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
-        end)
-    end)
-end)
-
-addcmd('unheadbang', {'unmouthbang', 'unhb', 'unmb'}, function()
-    if bangLoop then
-        bangLoop:Disconnect()
-        bang:Stop()
-        bangAnim:Destroy()
-        bangDied:Disconnect()
-    end
 end)
 
 addcmd("execute", {"run", "code"}, function(args, speaker)
