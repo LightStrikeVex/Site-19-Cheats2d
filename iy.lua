@@ -12933,16 +12933,13 @@ addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
         bangDied:Disconnect()
     end)
 
-    local bangOffset = CFrame.new(0, 1, -1.1)
     bangLoop = RunService.Stepped:Connect(function()
         pcall(function()
-            local otherRoot = game.Players[bangplr].Character.Head
-            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = otherRoot.CFrame * bangOffset
-            local CharPos = game.Players.LocalPlayer.Character.PrimaryPart.Position
-            local tpos = players.Character:FindFirstChild("HumanoidRootPart").Position
-            local TPos = Vector3.new(tpos.X, CharPos.Y, tpos.Z)
-            local NewCFrame = CFrame.new(CharPos, TPos)
-            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(NewCFrame)
+            local targetCharacter = game.Players[bangplr].Character
+            if targetCharacter and targetCharacter:FindFirstChild("Head") then
+                local targetHead = targetCharacter.Head
+                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
+            end
         end)
     end)
 end)
