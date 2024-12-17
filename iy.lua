@@ -4710,8 +4710,6 @@ CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
 CMDs[#CMDs + 1] = {NAME = 'adonisbypass / adsbypass', DESC = 'Command to evade the adonis anti cheat without crashing.'}
 CMDs[#CMDs + 1] = {NAME = 'anal', DESC = 'test doa team, why not'}
 CMDs[#CMDs + 1] = {NAME = 'highlightscps', DESC = 'AB2'} --12694
-CMDs[#CMDs + 1] = {NAME = 'headbang / mouthbang / hb / mb', DESC = 'Headbang'} --12900
-CMDs[#CMDs + 1] = {NAME = 'unheadbang / unmouthbang / unhb / unmb', DESC = 'Unheadbang'} --Same
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -10416,86 +10414,6 @@ addcmd('unbang',{'unrape'},function(args, speaker)
 		bang:Stop()
 		bangAnim:Destroy()
 	end
-end)
-
-function getPlr(name, speaker)
-    local players = {}
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if string.lower(player.Name):find(string.lower(name)) then
-            table.insert(players, player)
-        end
-    end
-    return players
-end
-
-addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
-    execCmd('unheadbang')
-    wait()
-    
-    local players = getPlr(args[1], speaker)
-    if #players == 0 then
-        notify("No players found.")
-        return
-    end
-
-    for _, v in pairs(players) do
-        local bangAnim = Instance.new("Animation")
-        if not r15(speaker) then
-            bangAnim.AnimationId = "rbxassetid://148840371"
-        else
-            bangAnim.AnimationId = "rbxassetid://5918726674"
-        end
-        
-        local bang = speaker.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
-        bang:Play(0.1, 1, 1)
-        
-        if args[2] then
-            bang:AdjustSpeed(args[2])
-        else
-            bang:AdjustSpeed(3)
-        end
-        
-        local bangplr = v.Name
-        local bangDied
-        
-        bangDied = speaker.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
-            if bangLoop then
-                bangLoop:Disconnect()
-            end
-            bang:Stop()
-            bangAnim:Destroy()
-            bangDied:Disconnect()
-        end)
-
-        local targetCharacter = v.Character
-        if targetCharacter and targetCharacter:FindFirstChild("Head") then
-            local targetHead = targetCharacter.Head
-            speaker.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
-        end
-
-        bangLoop = RunService.Stepped:Connect(function()
-            if not targetCharacter or not targetCharacter:FindFirstChild("Head") then
-                bangLoop:Disconnect()
-                bang:Stop()
-                bangAnim:Destroy()
-                return
-            end
-
-            pcall(function()
-                local targetHead = targetCharacter.Head
-                -- Asegurarse de que el jugador local se mantenga en la cabeza del jugador objetivo
-                speaker.Character:SetPrimaryPartCFrame(targetHead.CFrame * CFrame.new(0, 0, -1))
-        end)
-    end
-end)
-
-addcmd('unheadbang', {'unmouthbang', 'unhb', 'unmb'}, function(args, speaker)
-    if bangLoop then
-        bangLoop:Disconnect()
-        bang:Stop()
-        bangAnim:Destroy()
-        bangDied:Disconnect()
-    end
 end)
 
 addcmd('carpet',{},function(args, speaker)
