@@ -4710,6 +4710,8 @@ CMDs[#CMDs + 1] = {NAME = 'bypasskick / bpk', DESC = 's19 v3 from grumpy'}
 CMDs[#CMDs + 1] = {NAME = 'adonisbypass / adsbypass', DESC = 'Command to evade the adonis anti cheat without crashing.'}
 CMDs[#CMDs + 1] = {NAME = 'anal', DESC = 'test doa team, why not'}
 CMDs[#CMDs + 1] = {NAME = 'highlightscps', DESC = 'AB2'} --12694
+CMDs[#CMDs + 1] = {NAME = 'headbang / mouthbang / hb / mb', DESC = 'Headbang'} --12900
+CMDs[#CMDs + 1] = {NAME = 'unheadbang / unmouthbang / unhb / unmb', DESC = 'Unheadbang'} --Same
 wait()
 for i = 1, #CMDs do
 	local newcmd = Example:Clone()
@@ -12895,6 +12897,63 @@ end)
 addcmd('unS19God', {''}, function(args, speaker)
     healthEnabled = false
     notify('Stopped godmode.')
+end)
+
+addcmd('headbang', {'mouthbang', 'hb', 'mb'}, function(args, speaker)
+    local RunService = game:GetService("RunService")
+    
+    local speed = args[2] or 10
+    
+    local players = getPlr(args[1])
+    if not players then
+        notify("Player not found.")
+        return
+    end
+
+    local bangAnim = Instance.new("Animation")
+    if not r15(game.Players.LocalPlayer) then
+        bangAnim.AnimationId = "rbxassetid://148840371"
+    else
+        bangAnim.AnimationId = "rbxassetid://5918726674"
+    end
+
+    local bang = game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):LoadAnimation(bangAnim)
+    bang:Play(0.1, 1, 1)
+    bang:AdjustSpeed(speed)
+
+    local bangplr = players.Name
+    local bangDied
+
+    bangDied = game.Players.LocalPlayer.Character:FindFirstChildOfClass('Humanoid').Died:Connect(function()
+        if bangLoop then
+            bangLoop:Disconnect()
+        end
+        bang:Stop()
+        bangAnim:Destroy()
+        bangDied:Disconnect()
+    end)
+
+    local bangOffset = CFrame.new(0, 1, -1.1)
+    bangLoop = RunService.Stepped:Connect(function()
+        pcall(function()
+            local otherRoot = game.Players[bangplr].Character.Head
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = otherRoot.CFrame * bangOffset
+            local CharPos = game.Players.LocalPlayer.Character.PrimaryPart.Position
+            local tpos = players.Character:FindFirstChild("HumanoidRootPart").Position
+            local TPos = Vector3.new(tpos.X, CharPos.Y, tpos.Z)
+            local NewCFrame = CFrame.new(CharPos, TPos)
+            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(NewCFrame)
+        end)
+    end)
+end)
+
+addcmd('unheadbang', {'unmouthbang', 'unhb', 'unmb'}, function()
+    if bangLoop then
+        bangLoop:Disconnect()
+        bang:Stop()
+        bangAnim:Destroy()
+        bangDied:Disconnect()
+    end
 end)
 
 addcmd("execute", {"run", "code"}, function(args, speaker)
