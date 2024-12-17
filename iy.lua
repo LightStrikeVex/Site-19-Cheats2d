@@ -12619,10 +12619,11 @@ addcmd('highlightscps', {}, function(args, speaker)
         "SCP173",
         "SCP106",
         "SCP939",
+        "SCP066",
         "SCP966",
         "SCP049",
         "SCP096"
-    }  -- Lista de modelos SCP
+    }
     local highlightColor = Color3.new(1, 0, 0)
 
     for _, modelName in ipairs(scpModels) do
